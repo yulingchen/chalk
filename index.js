@@ -69,52 +69,56 @@ styles.visible = {
 	}
 };
 
-ansiStyles.color.closeRe = new RegExp(escapeStringRegexp(ansiStyles.color.close), 'g');
-for (const model of Object.keys(ansiStyles.color.ansi)) {
-	if (skipModels.has(model)) {
-		continue;
-	}
-
-	styles[model] = {
-		get() {
-			const level = this.level;
-			return function () {
-				const open = ansiStyles.color[levelMapping[level]][model].apply(null, arguments);
-				const codes = {
-					open,
-					close: ansiStyles.color.close,
-					closeRe: ansiStyles.color.closeRe
-				};
-				return build.call(this, this._styles ? this._styles.concat(codes) : [codes], this._empty, model);
-			};
+if (ansiStyles.color) {
+	ansiStyles.color.closeRe = new RegExp(escapeStringRegexp(ansiStyles.color.close), 'g');
+	for (const model of Object.keys(ansiStyles.color.ansi)) {
+		if (skipModels.has(model)) {
+			continue;
 		}
-	};
+
+		styles[model] = {
+			get() {
+				const level = this.level;
+				return function () {
+					const open = ansiStyles.color[levelMapping[level]][model].apply(null, arguments);
+					const codes = {
+						open,
+						close: ansiStyles.color.close,
+						closeRe: ansiStyles.color.closeRe
+					};
+					return build.call(this, this._styles ? this._styles.concat(codes) : [codes], this._empty, model);
+				};
+			}
+		};
+	}
 }
 
-ansiStyles.bgColor.closeRe = new RegExp(escapeStringRegexp(ansiStyles.bgColor.close), 'g');
-for (const model of Object.keys(ansiStyles.bgColor.ansi)) {
-	if (skipModels.has(model)) {
-		continue;
-	}
-
-	const bgModel = 'bg' + model[0].toUpperCase() + model.slice(1);
-	styles[bgModel] = {
-		get() {
-			const level = this.level;
-			return function () {
-				const open = ansiStyles.bgColor[levelMapping[level]][model].apply(null, arguments);
-				const codes = {
-					open,
-					close: ansiStyles.bgColor.close,
-					closeRe: ansiStyles.bgColor.closeRe
-				};
-				return build.call(this, this._styles ? this._styles.concat(codes) : [codes], this._empty, model);
-			};
+if (ansiStyles.bgColor) {
+	ansiStyles.bgColor.closeRe = new RegExp(escapeStringRegexp(ansiStyles.bgColor.close), 'g');
+	for (const model of Object.keys(ansiStyles.bgColor.ansi)) {
+		if (skipModels.has(model)) {
+			continue;
 		}
-	};
+
+		const bgModel = 'bg' + model[0].toUpperCase() + model.slice(1);
+		styles[bgModel] = {
+			get() {
+				const level = this.level;
+				return function () {
+					const open = ansiStyles.bgColor[levelMapping[level]][model].apply(null, arguments);
+					const codes = {
+						open,
+						close: ansiStyles.bgColor.close,
+						closeRe: ansiStyles.bgColor.closeRe
+					};
+					return build.call(this, this._styles ? this._styles.concat(codes) : [codes], this._empty, model);
+				};
+			}
+		};
+	}
 }
 
-const proto = Object.defineProperties(() => {}, styles);
+const proto = Object.defineProperties(() => { }, styles);
 
 function build(_styles, _empty, key) {
 	const builder = function () {
